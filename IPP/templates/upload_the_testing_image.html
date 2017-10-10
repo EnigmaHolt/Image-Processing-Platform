@@ -1,0 +1,376 @@
+<!-- USC CSCI 577a Team04 -->
+<!-- Author: Meiyi, Hao, Xinhui -->
+<!-- Desc: homepage -->
+<!-- Last Updated Date: 11/15/2016 -->
+
+<!--******************-->
+<!--**** Template ****-->
+<!--******************-->
+{% extends "base.html" %}
+{% block title %} Upload Training Image {% endblock %}
+{% load staticfiles %}
+{% block css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css" />
+        <link rel="stylesheet" type="text/css" href="{% static "js/uploadifive.css" %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+
+{% endblock css %}
+{% block js %}
+        <script src="{% static "js/jquery.uploadifive.js" %}" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.js"></script>
+        <script src ="{% static "js/extensions/editable/bootstrap-table-editable.js"%}"></script>
+        <script src ="{% static "js/extensions/toolbar/bootstrap-table-toolbar.js"%}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+        <script src ="{% static "js/bootstrap-waitingfor.js"%}"></script>
+
+{% endblock js %}
+
+{% block content %}
+    <body onpageshow="load()"></body>
+<form action="" class="form-horizontal" method="POST" id="testing-information-form">
+    <!--**** 1. Choose Model ****-->
+    <div class = "page-header">
+        <h3>1. Select Model</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <fieldset>              
+                <!-- <div class=" center-block">
+                    <select id="model_select" class="selectpicker" data-live-search="true">
+                        {% for model in model_list %}
+                            <option>{{ model }}</option>
+                        {% endfor %}
+                    </select>
+                </div> -->
+                <div class=" center-block">
+                    {% if  model_list|length > 0 %}
+                        <input type="radio" id = "model_select" name = "model_select" value="{{ model_list.0}}" checked>Original Model: {{ model_list.0 }}
+                        <button id="model_description" type="button" class="btn" data-toggle="popover" title="{{ model_list.0 }}" data-content="Description: {{ model_description.0 }}">
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        </button>
+                        <br>
+                    {% endif %}
+                    {% if  model_list|length > 1 %}
+                        <input type="radio" id = "model_select" name = "model_select" value="{{ model_list.1 }}"> Latest Model: {{ model_list.1 }}
+                        <button id="model_description" type="button" class="btn" data-toggle="popover" title="{{ model_list.1 }}" data-content="Description: {{ model_description.1 }}">
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        </button>
+                        <br>
+                    {% endif %}
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+    <!--**** 2. Upload Images ****-->
+    <div class = "page-header">
+        <h3>2. Select Images from Local Computer</h3>
+        <h5>   Only accepty less than 5 images</h5>
+    </div>
+    <div class="row">
+        <fieldset>
+            <!-- Images Uploading from Local -->
+            <div class="form-group">
+                <div class = "col-md-8">
+                    <div class="panel panel-default">
+                        <!-- select files -->
+                        <div class="panel-body">
+                          
+                            <div class="btn btn-sm btn-link">
+                                <input id="file_upload" type="file" name="Filedata">
+                            </div>
+                        </div>
+                        <div class="panel-heading">
+                            
+                        </div>
+                    </div>
+                    <!---------------- ----------------- -->
+                    <div align = "right">
+                        <button type="button" class="btn btn-default" onclick="javascript:$('#file_upload').uploadifive('clearQueue')">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="javascript:$('#file_upload').uploadifive('upload')">Confirm</button>              
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <!--div class = "col-md-8" align = "center">
+                <h4>Or
+                </h4>
+            </div-->
+
+            <!-- Images Uploading from Search Engine -->
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class = "col-md-8" style="visibility:hidden;">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+
+                                <label class="sr-only" for="topic"></label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Search Images</div>
+                                    <input type="text" class="form-control" id="topic" placeholder="Please Enter Topic">
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div align = "right">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" id = "searchImage">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </fieldset>  
+    </div>
+
+    <!--**** 3. Confirm Images ****-->
+    <div class = "page-header">
+        <h3>3. Submit</h3>
+    </div>
+    <div class = "row">
+        <div class = "col-md-8">
+
+            <!--Image Lists-->
+            <div class = "panel-body">
+                <div class="modal fade" id="view_image_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">Check Image</h4>
+                            </div>
+                            <div class="modal-body">
+                                <img id="img_image" class="img-thumbnail" >
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal" id="btn_close_image">close</button>
+                                <button type="button" class="btn btn-primary" id="btn_download_image"><a id="a_image" style="color: rgb(248,248,255)" download>Download</a></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table id="testing_image" ></table>
+            </div>
+
+            <!-- Sumbit Button -->
+            <div class="panel-heading">
+                <div align = "right">
+                    <button class = "btn btn-primary" style="color:white" onclick="post_parameter();"> Submit </button>
+                </div>
+            </div>
+   
+        </div>
+    </div>
+</form>
+
+
+
+<!--********************-->
+<!--**** JavaScript ****-->
+<!--********************-->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('[data-toggle="popover"]').popover();
+    });
+
+     var script_URL = '/upload-testing-to-server/'
+		$(function() {
+			$('#file_upload').uploadifive({
+                'auto'      : false,
+                 'uploadScript' : script_URL,
+                'multi': true,
+                'queueSizeLimit':5,
+                'removeCompleted':true,
+                'sizeLimit':10240000,
+                'fileType':'image/*',
+                'fileDesc':'Image Files',
+                'filesSizeLimit' :'10000kb',
+                 'itemTemplate' : '<div class="uploadifive-queue-item"><span class="filename"></span> | <span class="fileinfo"></span><div class="close"></div></div>',
+                'onInit': function () {},
+                'onError' : function (event,ID,fileObj,errorObj) {
+            $('#id_span_msg').html("upload error, the error code is :"+errorObj.type+" "+errorObj.info);
+        },
+    'onSelect': function (queue) {
+        alert(queue.queued + ' files were added to the queue.');
+    },
+    'onUploadComplete': function (file) {
+        if(file.filesUploaded>=1){
+          $('#id_span_msg').html("upload success！");
+                }
+        $table.bootstrapTable('refresh');
+
+            },
+    'onQueueComplete' : function(uploads) {
+        alert(uploads.successful + ' files were uploaded successfully.');
+        $('#file_upload').uploadifive('clearQueue');
+
+        }
+        });
+    });
+     function detailFormatter(value, row,index) {
+        return [
+        '<a class="check" href="javascript:void(0)" title="Check">',
+        '<i class="glyphicon glyphicon-file"></i>',
+        '</a>  '
+        ].join('');
+    }
+     var imageData_URL = '/getImageJsonData/0'
+     var $table = $('#testing_image');
+        $(function () {
+        $table.bootstrapTable({
+            url:imageData_URL ,
+            method: 'get',
+            striped: true,
+            cache: false,
+            pagination: false,
+            sortable: false,
+            sortOrder: "asc",
+            sidePagination: "server",
+            pageNumber:1,
+            pageSize: 10,
+            pageList: [10, 25, 50, 100],
+            search: false,
+            strictSearch: false,
+            showRefresh: true,
+            minimumCountColumns: 2,
+            clickToSelect: false,
+            height: 500,
+            uniqueId: "ID",
+            cardView: false,
+            detailView: false,
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'imageFileName',
+                title: 'Image File Name',
+                editable:true
+
+            }, {
+                field: 'imageFormat',
+                title: 'Image Format'
+            }, {
+                field: 'imageSize',
+                title: 'Image Size'
+            }, {
+                field: 'createTime',
+                title: 'Create Time'
+            },{
+                field:'url',
+                title:'URL',
+                visible:false
+            },{
+                field:'operate',
+                title:'View',
+                events:'operateEvents',
+                formatter:detailFormatter
+            } ],
+            onEditableSave: function (field, row, oldValue, $el) {
+                        $.ajax({
+                            type: "post",
+                            url: "/modify-image/",
+                            data: {strJson: JSON.stringify(row),object:field},
+                            success: function (data, status) {
+                                if(data=='success')
+                                {
+
+                                }else if (data=='empty')
+                                {
+                                    alert('Content cannot be empty');
+                                }else if (data=='error')
+                                {
+                                    alert("Topic name already exist!");
+                                }
+                                    $table.bootstrapTable('refresh');
+
+
+                            },
+                            error: function () {
+
+                            },
+                            complete: function () {
+
+                            }
+
+                        })
+                    }
+        });
+    });
+    // $('#model_select').on('changed.bs.select', function (e) {
+
+    // });
+
+    window.operateEvents = {
+        'click .check': function (e, value, row, index) {
+            var image_url = '/photo/TESTING_IMAGE/'+row['imageFileName'];
+            $('#img_image').attr('src',image_url);
+            $('#a_image').attr('href',image_url);
+            $("#view_image_modal").modal({keyboard:true})
+        },
+        };
+
+     var $search_button = $('#searchImage');
+     $search_button.click(function () {
+         $.ajax({
+             type:"post",
+             url:"/get-testing-image-from-goolesearch/",
+             data:{topic:$("#topic").val()},
+             success: function (data, status) {
+               var searchResult = JSON.parse(data);
+                 console.log(searchResult);
+               var helper = " ";
+                var i;
+                    for (i = 0; i < searchResult.length; ++i) {
+                        helper = "<div class='col-md-4'><img src='" + searchResult[i] + "' style='width:150px;height:150px'></div>";
+                            $("#rowId1").append(helper);
+
+
+                    }
+               $("#hidden").click();
+                    },
+                    error: function () {
+                        alert("search failed!");
+                    },
+                    complete: function () {
+                    }
+         });
+        });
+    var post_parameter = function(){
+        //var selectedText = $('#model_select').find("option:selected").text();
+        var selectedText= $("input[name='model_select']:checked").val();
+        post('/testing/',{model:selectedText});
+        waitingDialog.show('We are testing your images!');
+
+    };
+
+    function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+function load() {
+    waitingDialog.hide();
+
+}
+</script>
+{%  endblock content %}

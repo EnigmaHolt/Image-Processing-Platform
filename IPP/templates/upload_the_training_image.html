@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %} Upload Training Image {% endblock %}
+{% load staticfiles %}
+{% block css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css" />
+        <link rel="stylesheet" type="text/css" href="{% static "js/uploadifive.css" %}">
+{% endblock css %}
+{% block js %}
+        <script src="{% static "js/jquery.uploadifive.js" %}" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.js"></script>
+        <script src ="{% static "js/extensions/editable/bootstrap-table-editable.js"%}"></script>
+        <script src ="{% static "js/extensions/toolbar/bootstrap-table-toolbar.js"%}"></script>
+{% endblock js %}
+
+{% block content %}
+    <!-- Select image to upload -->
+    <div class="row">
+        <div class="col-md-10">
+            <div class = "page-header">
+                <h3>1. Select Images</h3>
+            </div>
+            <div class="demo-box">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <!-- select files -->
+                        <div class="btn btn-sm btn-link">
+                            <input id="file_upload" type="file" name="Filedata">
+                        </div>
+                        <!-- upload queue -->
+                        <p><div id="file_uploadQueue" class="uploadifyQueue"></div></p>
+                    </div>
+                    <div class="panel-heading" align="right">
+                        <!-- Submit & Cancel -->
+                        <button type="button" class="btn btn-default" onClick="javascript:$('#file_upload').uploadifive('clearQueue')">
+                            <span>Cancel</span>
+                        </button>
+
+                        <button type="button" class="btn btn-default" onClick="javascript:$('#file_upload').uploadifive('upload')">
+                            <span>Upload</span>
+                        </button>
+
+                        <!-- message -->
+                        <p><span id="id_span_msg"></span></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Image List -->
+    <div class="row">
+        <div class="col-md-10">
+            <!-- Header -->
+            <div class="page-header">
+                <h3>2. Image List</h3>
+            </div>
+            <!-- Delete uploaded image -->
+            <div id="toolbar" class="btn-group">
+                <button id="btn_delete" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete
+                </button>
+            </div>
+
+            <!--static modal for viewing image-->
+            <div class="modal fade" id="view_image_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">Check Image</h4>
+                        </div>
+                        <div class="modal-body">
+                            <img id="img_image" class="img-thumbnail" >
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="btn_close_image">close</button>
+                            <button type="button" class="btn btn-primary" id="btn_download_image"><a id="a_image" style="color: rgb(248,248,255)" download>Download</a></button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            <table class="table" id="training_image"></table>
+        </div>
+    </div>
+    <!-- Link to Training -->
+    <div class = "row">
+        <div class = "col-md-10">
+            <div class="page-header">
+                <h3>3. Model Description</h3>
+            </div>
+            <div>
+                <form action="/training/" onsubmit="return image_number_validate_required()" method='post'>
+                        <textarea class="form-control" name = 'description' rows="2" id="description"></textarea>
+                        <!-- <label for="pattern">Select Training Pattern</label> -->
+                        <div class="modal-body">
+                        <p>Select Training Pattern
+                        <select name="model_option" id="pattern">
+                            <option>Debug Mode (Iteration: 1)</option>
+                            <option>Speed Priority Training Mode (Iteration: 300)</option>
+                            <option>Speed-Accuracy Balance Mode (Iteration: 600)</option>
+                            <option>Accuracy Priority Mode (Iteration: 1200)</option>
+                        </select>
+                        </p></div>
+                    <div align="right">
+                        <button id="returnBtn" type="button" class="btn btn-default" onclick="javascript:history.go(-1);">Go previous page</button>
+                        <input type="submit"  class = "btn btn-primary" value="Begin to Train">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- JavaScript -->
+	<script type="text/javascript">
+    var topicId = "{{ topicId }}"
+
+    var imageData_URL = '/getImageJsonData/'+topicId
+     var $table = $('#training_image');
+        $(function () {
+        $table.bootstrapTable({
+            url:imageData_URL ,
+            method: 'get',
+            toolbar: '#toolbar',
+            striped: true,
+            cache: false,
+            pagination: false,
+            sortable: false,
+            sortOrder: "asc",
+            sidePagination: "server",
+            pageNumber:1,
+            pageSize: 10,
+            pageList: [10, 25, 50, 100],
+            search: false,
+            strictSearch: false,
+            showRefresh: true,
+            minimumCountColumns: 2,
+            clickToSelect: false,
+            height: 500,
+            uniqueId: "ID",
+            cardView: false,
+            detailView: false,
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'imageFileName',
+                title: 'Image File Name',
+                editable:true
+
+            }, {
+                field: 'imageFormat',
+                title: 'Image Format'
+            }, {
+                field: 'imageSize',
+                title: 'Image Size(Byte)'
+            }, {
+                field: 'createTime',
+                title: 'Create Time'
+            },{
+                field:'url',
+                title:'URL',
+                visible:false
+            },{
+                field:'operate',
+                title:'Check Images',
+                events:'operateEvents',
+                formatter:detailFormatter
+            } ],
+            onEditableSave: function (field, row, oldValue, $el) {
+                        $.ajax({
+                            type: "post",
+                            url: "/modify-image/",
+                            data: {strJson: JSON.stringify(row),object:field},
+                            success: function (data, status) {
+                                if(data=='success')
+                                {
+
+                                }else if (data=='empty')
+                                {
+                                    alert('Content cannot be empty');
+                                }else if (data=='error')
+                                {
+                                    alert("Topic name already exist!");
+                                }
+                                    $table.bootstrapTable('refresh');
+
+
+                            },
+                            error: function () {
+
+                            },
+                            complete: function () {
+
+                            }
+
+                        })
+                    }
+        });
+    });
+
+        var $delete_button = $('#btn_delete');
+             $delete_button.click(function () {
+
+                 $.ajax({
+                     type:"post",
+                     url:"/delete-image/",
+                     data:{image_list:JSON.stringify($table.bootstrapTable('getSelections'))},
+                     success: function (data, status) {
+                                if(data=='success')
+                                {
+                                    alert("delete success");
+                                    $table.bootstrapTable('refresh');
+                                }
+
+                            },
+                            error: function () {
+                                alert("delete failed!");
+                                $table.bootstrapTable('refresh');
+
+                            },
+                            complete: function () {
+
+                            }
+                 });
+                });
+        function detailFormatter(value, row,index) {
+            return [
+            '<a class="check" href="javascript:void(0)" title="Check">',
+            '<i class="glyphicon glyphicon-file"></i>',
+            '</a>  '
+            ].join('');
+        }
+         window.operateEvents = {
+        'click .check': function (e, value, row, index) {
+            var image_url = '/photo/photos'+row['url'];
+            $('#img_image').attr('src',image_url);
+            $('#a_image').attr('href',image_url);
+            $("#view_image_modal").modal({keyboard:true})
+        },
+        };
+        var script_URL = '/upload-to-server/'
+		$(function() {
+			$('#file_upload').uploadifive({
+                'auto'      : false,
+                'formData':{'topicID':topicId},
+                'folder'    : '/upload',
+                 'uploadScript' : script_URL,
+                'multi': true,
+                'queueSizeLimit':2000,
+                'removeCompleted':false,
+                'sizeLimit':10240000,
+                'fileType':'image/*',
+                'fileDesc':'Image Files',
+                'filesSizeLimit' :'10000kb',
+                 'itemTemplate' : '<div class="uploadifive-queue-item"><span class="filename"></span> | <span class="fileinfo"></span><div class="close"></div></div>',
+                'onInit': function () {},
+                'onError' : function (event,ID,fileObj,errorObj) {
+            $('#id_span_msg').html("upload error, the error code is :"+errorObj.type+" "+errorObj.info);
+        },
+    'onSelect': function (queue) {
+        alert(queue.queued + ' files were added to the queue.');
+    },
+    'onUploadComplete': function (file) {
+        if(file.filesUploaded>=1){
+          $('#id_span_msg').html("upload success！");
+                }
+          $table.bootstrapTable('refresh');
+            },
+    'onQueueComplete' : function(uploads) {
+            alert(uploads.successful + ' files were uploaded successfully.');
+            $('#file_upload').uploadifive('clearQueue');
+
+        }
+        });
+    });
+
+    function image_number_validate_required()
+    {
+            number_of_images = $('#training_image').bootstrapTable('getData').length
+            if (number_of_images<30)
+            {alert('You need to upload more than 30 images, now only '+number_of_images+' images');
+                return false}
+            else {return true}
+    }
+
+	</script>
+
+{% endblock content %}

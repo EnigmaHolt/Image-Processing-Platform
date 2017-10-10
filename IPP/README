@@ -1,0 +1,46 @@
+# Image Processing Platform (IPP)
+
+CSCI577a Team04
+
+## Team members
+Hao Wu, 
+Meiyi Yang,
+Yifan Liu,
+Xiangchen Zhao, 
+Vinny, 
+Xinhui Liu, 
+Junran Liu
+
+## Requirement
+
+* Ubuntu 14.04 / 14.10 / 15.04/ 16.04
+* Mysql 5.7
+* Python 3.5
+* Django 1.9.2
+* Celery 1.3
+* Tensorflow
+
+## Structure
+
+1 --> 2 --> 3 --> 4 --> 5
+      | 
+      6 --> 7 -- > 8 --> 2
+
+* 1. Home: home page
+* 2. Info: trained models inforamtion
+* 3. Image: select model and images need to be classified
+* 4. Classify: begin to classify
+* 5. Result: the classification results
+* 6. Topic: current topic list
+* 7. Dataset: images in certain topic
+* 8. Retrain: begin to retrain
+* 9. Navigation: Home / Info / Image / Topic
+
+
+
+
+
+
+
+
+

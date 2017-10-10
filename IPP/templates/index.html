@@ -1,0 +1,158 @@
+<!-- USC CSCI 577a Team04 -->
+<!-- Author: Meiyi -->
+<!-- Desc: homepage -->
+<!-- Last Updated Date: 11/15/2016 -->
+
+<!-- Template -->
+<html>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Custom Fonts -->
+        {% load staticfiles %}
+    <link href="{% static "CSS/font-awesome.min.css"%}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    <link href="{% static "CSS/agency.min.css"%}" rel="stylesheet">
+    <body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <!-- Navigation Head -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                     <span class="sr-only">Toggle navigation</span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">Image Processing Platform</a>
+            </div>
+
+            <!-- button -->
+            <div id="navbar" class="navbar-collapse collapse">
+                <!-- Training & Testing -->
+                <ul class="nav navbar-nav">
+                    <li><a href = "{% url 'upload_test' %}">Image Classfication</a></li>
+                    <li><a href = "{% url 'topic' %}">Model Retraining</a></li>
+{#                    <!-- <li><a href = "{% url 'info' %}">Information</a></li> -->#}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://greenbay.usc.edu/csci577/fall2016/projects/team04/">About us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<!-- Header -->
+
+<header style = "background-image: url({% static "header-bg.jpg" %}); background-repeat: no-repeat;background-attachment: scroll;
+      background-position: center center;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      background-size: cover;
+      -o-background-size: cover;
+      text-align: center;
+      color: white;">
+ <!--    <div class="container">
+        <div class="intro-text">
+            <div class="intro-lead-in">CSCI577a Fall2016 Team04</div>
+            <div class="intro-heading">Image Processing Platform</div>
+            <a href="#Classify" class="page-scroll btn btn-xl">Tell Me More</a>
+        </div>
+    </div>
+</header>
+    <header> -->
+
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in">CSCI577a Fall2016 Team04</div>
+                <div class="intro-heading">Image Processing Platform</div>
+                <div class="row text-center">
+                <div class ="col-md-1"></div>
+                <div class ="col-md-5"><a href="#classify" class="page-scroll btn btn-xl ">For classfication</a></div>
+                <div class ="col-md-5"><a href="#train" class="page-scroll btn btn-xl">For training</a></div>
+                <div class ="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section id="classify">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-5">
+                    <h2 class="section-heading">Image Classification</h2>
+                    <h3 class="section-subheading text-muted">Recognize the class of images using our pre-trained CNN model under TensorFlow.</h3>
+                    <a href="{% url 'upload_test' %}" class="page-scroll btn btn-xl">Get Start!</a>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                        <img src="{% static "img/Capture.png" %}" class="img-responsive" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="train" class="bg-light-gray">
+        <div class="container">
+            <div class="row text-center">
+                 <div class="col-md-1"></div>
+                <div class="col-md-4">
+                    <img src="{% static "img/cube.jpg" %}" width="260px" height="260px"class="img-responsive" alt="">
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <h2 class="section-heading">Image Model Training</h2>
+                    <h3 class="section-subheading text-muted">Upload your image dataset and retrain the model for your own tasks. More images, better model.</h3>
+                    <a href="{% url 'topic' %}" class="page-scroll btn btn-xl">Get Start!</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="Overview">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Overview</h2>
+                    <h3 class="section-subheading text-muted">Technology and software in our platform</h3>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-5">
+                    <h4 class="service-heading">Convolutional Neural Networks</h4>
+                    <p class="text-muted">Researchers have found that a kind a of model called a deep convolutional neural network can achieve reasonable performance on hard visual recognition tasks -- matching or exceeding human performance in some domains.</p>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <h4 class="service-heading">TensorFlow</h4>
+                    <p class="text-muted">TensorFlow is an Open Source Software Library for Machine Intelligence.The flexible architecture allows you to deploy computation to one or more CPUs or GPUs in a desktop, server, or mobile device with a single API. </p>
+                </div>
+            </div>
+            <div style="height:80px; visibility: hidden">1</div>
+             <div class="row text-center">
+                <div class="col-md-5">
+                    <h4 class="service-heading">Inception-v3</h4>
+                    <p class="text-muted">Inception-v3 is the latest model released by Google for running recogintion. It is trained for the ImageNet Large Visual Recognition Challenge using the data from 2012. </p>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <h4 class="service-heading">CIFAR-100 Dataset</h4>
+                    <p class="text-muted">CIFAR-100 Dataset is an open source dataset which was collected by Alex Krizhevsky, Vinod Nair, and Geoffrey Hinton. It consists of 60000 32x32 color images in 100 classes, with 600 images per class. </p>
+                </div>
+            </div>
+            </div>
+            <div>
+            </div>
+
+        </div>
+    </section>
+    </body>
+</html>

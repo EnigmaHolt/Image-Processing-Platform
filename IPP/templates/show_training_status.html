@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+<style>
+#myProgress {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  background-color: #ddd;
+}
+
+#myBar {
+  position: absolute;
+  width: 1%;
+  height: 100%;
+  background-color: #4CAF50;
+}
+</style>
+<body>
+
+<p>
+  Your Task is <span id="user-count"></span>!
+</p>
+
+<div class="status"></div>
+   {% if task_id %}
+
+<!--progress bar-->
+   <div id="myProgress">
+    <div id="myBar"></div>
+   </div>
+<!--end progress bar-->
+   {% endif %}
+</div>
+<div style="height:30px; visibility: hidden">1</div>
+<div class = "row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <button id="returnBtn" type="button" class="btn btn-primary" style="visibility:hidden;" onclick="javascript:history.go(-1);">Go previous page</button>
+    </div>
+<div class="col-md-4"></div>
+</div>
+<script type="text/javascript">
+
+   var poll_xhr;
+       var poll = function () {
+           var task_id = "{{task_id}}";
+           var description = "{{descriptions}}";
+           console.log(task_id)
+           poll_xhr = $.ajax({
+               url: 'poll_state',
+               type: 'POST',
+               data: {
+                   task_id: task_id,
+                   descriptions:description,
+
+               },
+               success: function (result) {
+                   var progressbar = document.getElementById("myBar");
+                   var content = document.getElementById('user-count');
+                   if (result.type == 'processing') {
+                       progressbar.style.width = (result.process_percent+10)+'%';
+                       content.textContent = 'PROCESSING';
+                        setTimeout(location.reload.bind(location), 10000);
+                   }
+                   else if(result.type =='pending')
+                   {
+                       progressbar.style.width = 3+'%';
+                       content.textContent = 'IN PROCESSING';
+                       setTimeout(location.reload.bind(location), 10000);
+                   }
+                   else if (result.type == 'done') {
+                       content.textContent = 'DONE';
+                       progressbar.style.width = 110+'%';
+                       document.getElementById('returnBtn').style.visibility = 'visible';
+                   }else  if (reslut.type == 'Failure')
+                   {
+                       content.textContent = 'Failure';
+                       progressbar.style.width = 99+'%';
+                       document.getElementById('returnBtn').style.visibility = 'visible';
+                   }
+               }
+           });
+       };
+    $(function(){
+           poll();
+    });
+
+</script>
+
+
+
+</body>
+{% endblock content %}

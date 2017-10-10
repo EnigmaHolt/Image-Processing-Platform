@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+{% block title %} Topic {% endblock %}
+{% block css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css" />
+{% endblock css %}
+{% block js %}
+        {% load staticfiles %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.js"></script>
+        <script src ="{% static "js/extensions/editable/bootstrap-table-editable.js"%}"></script>
+        <script src ="{% static "js/extensions/toolbar/bootstrap-table-toolbar.js"%}"></script>
+
+{% endblock js %}
+{% block content %}
+    <!-- Topic Table -->
+    <div class = "row">
+        <div class="col-md-10">
+            <!-- Header: topic table -->
+            <div class = "page-header">
+                <h3>Select Topics</h3>
+            </div>
+
+            <!-- ToolBar: add & delete -->
+            <div id="toolbar" class="btn-group">
+                <button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add
+                </button>
+                <button id="btn_delete" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete
+                </button>
+            </div>
+     
+            <!-- Table: topic list -->
+            <div class="input-group"> <span class="input-group-addon">Search</span>
+            <input id="filter" type="text" class="form-control" onkeyup="myFunction()" placeholder="Input Topic (Case Insensitive)...">
+            </div>
+            <table class="table" id="topic" data-cache="false" data-id-table="advancedTable" >
+            </table>
+            <!--static modal for adding topic-->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">Add New Topic</h4>
+                        </div>
+                        <div class="modal-body">
+                            Topic Name: 
+                            <input type="text" class="form-control" name="wi_new_topic_name" id="wi_new_topic_name">
+                            Description: 
+                            <input type="text" class="form-control" name="wi_new_topic_note" id="wi_new_topic_note">
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal" id="btn_close_wi">close</button>
+                                <button type="button" class="btn btn-primary" id="btn_add_wi">submit</button>
+                            </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel: add an empty topic
+    <div class = "row">
+        <div class="col-md-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Add an Empty Topic
+                    </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" method="post" onsubmit="return check(this)">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <label class="control-label" for="new_topic_name">Name</label>
+                                <input type="text" class="form-control" name="new_topic_name" id="new_topic_name">
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="control-label" for="new_topic_note">Description</label>
+                                <input type="text" class="form-control" name="new_topic_note" id="new_topic_note">
+                            </div>
+                            <div class="col-sm-4" align="center">
+                                <input type="submit" id="btn_add" class="btn btn-primary" value="ADD" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div-->
+
+    <!-- JavaScript -->
+    <script type="text/javascript" >
+
+        $(function () {
+
+            //1.init table
+            var oTable = new TableInit();
+            oTable.Init();
+
+            //2.init table click event
+            var oButtonInit = new ButtonInit();
+            oButtonInit.Init();
+
+        });
+
+        var TableInit = function () {
+            var oTableInit = new Object();
+            //初始化Table
+            oTableInit.Init = function () {
+                var $table = $('#topic');
+                $(function () {
+                $table.bootstrapTable({
+                    url:'/getTopicJsonData' ,
+                    method: 'get',                      //request method
+                    toolbar: '#toolbar',                //toolbar container
+                    striped: true,
+                    cache: false,                       //enable cache
+                    sidePagination: "server",
+                    showColumns: true,
+                    showRefresh: true,                  //fresh button
+                    height: 500,                        //
+                    showToggle:false,
+                    showFilter: true,
+                    columns: [{
+                        checkbox:true
+                    }, {
+                        field: 'topicName',
+                        title: 'Topic Name',
+                        editable:true
+
+                    }, {
+                        field: 'createTime',
+                        title: 'Create Time'
+                    }, {
+                        field: 'lastUpdateTime',
+                        title: 'Last Update Time'
+                    }, {
+                        field: 'trainTimes',
+                        title: 'Training Times'
+                    },
+                    // {
+                    //     field: 'note',
+                    //     title: 'Description',
+                    //     editable:true
+
+                    // },
+                    {
+                        field:'enter',
+                        title:'Add Images',
+                        events:'operateEvents',
+                        formatter:detailFormatter
+                    }],
+                    onEditableSave: function (field, row, oldValue, $el) {
+                        $.ajax({
+                            type: "post",
+                            url: "/modify-topic/",
+                            data: {strJson: JSON.stringify(row),object:field},
+                            success: function (data, status) {
+                                if(data=='success')
+                                {
+
+                                }else if (data=='empty')
+                                {
+                                    alert('Content cannot be empty');
+                                }else if (data=='error')
+                                {
+                                    alert("Topic name already exist!");
+                                }
+                                    $table.bootstrapTable('refresh');
+
+
+                            },
+                            error: function () {
+
+                            },
+                            complete: function () {
+
+                            }
+
+                        })
+                    }
+                });
+            });
+             var $delete_button = $('#btn_delete');
+             $delete_button.click(function () {
+                 $.ajax({
+                     type:"post",
+                     url:"/delete-topic/",
+                     data:{topic_list:JSON.stringify($table.bootstrapTable('getSelections'))},
+                     success: function (data, status) {
+                                if(data=='success')
+                                {
+                                    bootbox.alert({
+                                        message: "delete success",
+                                        size: 'small'
+                                    });
+
+                                    $table.bootstrapTable('refresh');
+                                }
+
+                            },
+                            error: function () {
+                                alert("delete failed!");
+                                $table.bootstrapTable('refresh');
+
+                            },
+                            complete: function () {
+
+                            }
+                 });
+            });
+            var $add_button = $('#btn_add_wi');
+            //get data from modal
+
+            //modal add new topic
+
+            $add_button.click(function ()
+            {
+                var topicName = $('#wi_new_topic_name').val();
+                var topicDescription = $('#wi_new_topic_note').val();
+                if (topicName !== '' && topicDescription !== '') {
+                    $.ajax({
+                        type: "post",
+                        url: "/add-topic-without-image/",
+                        data: {topic_name: topicName, topic_note: topicDescription},
+                        success: function (data, status) {
+                            if (data=='success')
+                            {
+                                $('#btn_close_wi').click();
+                                $table.bootstrapTable('refresh');
+                            }else if(data == 'error')
+                            {
+                                    bootbox.alert({
+                                        message: "Topic name already exist!",
+                                        size: 'small'
+                                                });
+
+                                 $table.bootstrapTable('refresh');
+                            }
+                        },
+                        error: function () {
+
+
+                        },
+                        complete: function () {
+
+                        }
+                    });
+                }else
+                {
+                    alert('Topic Name and description are needed!');
+                }
+
+            });
+            //end add new topic
+
+            };
+
+            return oTableInit;
+        };
+
+
+    var ButtonInit = function () {
+        var oInit = new Object();
+        var postdata = {};
+
+        oInit.Init = function () {
+
+        };
+
+        return oInit;
+    };
+    function check(form) {
+        with(form)
+        {
+            if(validate_required(new_topic_name,"New Topic Name is required")==false)
+            {
+                new_topic_name.focus();
+                return false
+            }
+            if(validate_required(new_topic_note,"New Topic Description is required")==false)
+            {
+                new_topic_note.focus();
+                return false
+            }
+
+        }
+    }
+    function validate_required(field,alerttxt,type)
+    {
+        with (field)
+        {
+
+            if (value==null||value=="")
+            {
+                    bootbox.alert({
+                        message: alerttxt,
+                        size: 'small'
+                        });
+                return false
+            }
+            else {return true}
+         }
+    }
+
+    function detailFormatter(value, row,index) {
+            return [
+            '<a id="enter" style="width: 50px" href="javascript:void(0)" title="enter">',
+            '<span  class="glyphicon glyphicon-cog style="font-size: 40px"></span>',
+            '</a>  '
+            ].join('');
+        }
+    window.operateEvents = {
+        'click #enter': function (e, value, row, index) {
+           window.location = "/uploadTrainingImages/"+row['id'];
+            }
+        };
+function myFunction() {
+  // Declare variables
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("filter");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("topic");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+
+    </script>
+{% endblock content %}

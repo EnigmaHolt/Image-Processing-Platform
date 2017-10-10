@@ -1,0 +1,67 @@
+<!-- USC CSCI 577a Team04 -->
+<!-- Author: Meiyi -->
+<!-- Desc: model and algorithm introduction -->
+<!-- Last Updated Date: 11/15/2016 -->
+
+<!-- Template -->
+{% extends "base.html" %}
+{% block title %} Topic {% endblock %}
+{% block css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+
+{% endblock css %}
+{% block js %}
+        {% load staticfiles %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.js"></script>
+        <script src ="{% static "js/extensions/editable/bootstrap-table-editable.js"%}"></script>
+        <script src ="{% static "js/extensions/toolbar/bootstrap-table-toolbar.js"%}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+{% endblock js %}
+
+
+{% block content %}
+<!-- Info -->
+<div class = "page-header">
+    <h3> Algorithm introduction </h3>
+</div>
+<div class = "row">
+    Info1
+    Info2
+</div>
+
+<!-- Upload & Retain Button -->
+<div class = "row">
+    <div classs = "col-md-10">
+        <!-- Upload Button -->
+        <div align = "right">
+            <div class = "btn btn-lg btn-primary">
+                <a href = "{% url 'upload_test' %}" style="color:white">Begin to Classify</a> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Retrain & Model List -->
+<div class = "page-header">
+    <h3> Model list </h3>
+</div>
+<div class = "row">
+    <div classs = "col-md-10">
+        <!-- Retrain button -->
+        <div align = "right">
+            <div class = "btn btn-lg btn-default">
+                <a href = "{% url 'topic' %}" style="color:black">Retrain</a> 
+            </div>
+        </div>
+        <!-- Model (Optional) -->
+        <div class=" center-block">
+            <select id="model_select" class="selectpicker" data-live-search="true">
+                {% for model in model_list %}
+                    <option>{{ model }}</option>
+                {% endfor %}
+            </select>
+        </div>
+</div>
+{% endblock content %}

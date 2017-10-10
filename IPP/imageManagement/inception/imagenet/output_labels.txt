@@ -1,0 +1,102 @@
+mushroom
+gun
+aquarium fish
+rocket
+bed
+kangaroo
+raccoon
+knife
+butterfly
+mountain
+oak tree
+lobster
+possum
+man
+table
+sunflower
+bottle
+plain
+motorcycle
+road
+bicycle
+beaver
+whale
+caterpillar
+tiger
+baby
+fox
+tulip
+chair
+wardrobe
+flatfish
+lion
+castle
+telephone
+shark
+leopard
+streetcar
+orchid
+apple
+woman
+dinosaur
+sea
+skyscraper
+television
+train
+dolphin
+boy
+elephant
+bear
+squirrel
+otter
+mouse
+clock
+house
+pine tree
+couch
+crocodile
+pickup truck
+turtle
+cup
+orange
+sweet pepper
+cattle
+palm tree
+willow tree
+bee
+lizard
+cockroach
+bowl
+keyboard
+camel
+bus
+tank
+lamp
+worm
+tractor
+bridge
+rabbit
+hamster
+spider
+pear
+trout
+can
+girl
+snake
+lawn mower
+porcupine
+chimpanzee
+beetle
+cloud
+plate
+forest
+seal
+poppy
+ray
+snail
+crab
+rose
+shrew
+maple tree
+skunk
+wolf

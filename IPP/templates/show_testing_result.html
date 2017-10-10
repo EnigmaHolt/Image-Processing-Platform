@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block js %}
+   <script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+   <script src="http://cdn.hcharts.cn/highcharts/modules/exporting.js"></script>
+{% endblock js %}
+
+{% block content %}
+
+<!-- result -->
+
+{% if size == 0 %}
+    <h4>No image is selected.</h4>
+{% endif %}
+
+
+<div class= "row">
+  <div  class= "col-md-6">
+
+      
+
+    {% for data in re %}
+    <div class="panel panel-primary">
+      <div class = "panel-heading">
+        <div class = "panel-title"> {{data.result}} </div>
+          </div>
+          <div class = "panel-body">
+            <img src= '{{data.url}}' style="max-width:200pt; max-height:200pt">
+
+             <p>
+             Image Size: {{ data.imageSize }}
+             </p>
+             <p>
+             Image Name: {{ data.imageName }}
+             </p>
+          </div>
+
+    </div>
+
+    <div class="panel-heading">
+    <div align = "right">
+      <button id="returnBtn" type="button" class="btn btn-primary" onclick="javascript:history.go(-1);">Go previous page</button>
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+
+<!--
+   <script>
+   $(function () {
+   $('#container').highcharts({
+       chart: {
+           plotBackgroundColor: null,
+           plotBorderWidth: null,
+           plotShadow: false
+       },
+       title: {
+           text: 'Browser market shares at a specific website, 2014'
+       },
+       tooltip: {
+           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+       },
+       plotOptions: {
+           pie: {
+               allowPointSelect: true,
+               cursor: 'pointer',
+               dataLabels: {
+                   enabled: false
+               },
+               showInLegend: true
+           }
+       },
+       series: [{
+           type: 'pie',
+           name: 'matched-degree',
+           data: [
+               ['Cat',   45.0],
+               ['Dog',       26.8],
+               {
+                   name: 'Gun',
+                   y: 12.8,
+                   sliced: true,
+                   selected: true
+               },
+               ['King',    8.5],
+               ['Test',     6.2],
+               ['Others',   0.7]
+           ]
+       }]
+   });
+});
+   </script>
+   -->
+
+{% endblock content %}
